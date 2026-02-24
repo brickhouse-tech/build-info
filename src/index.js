@@ -1,68 +1,76 @@
-import gitFact from 'simple-git';
-import { promisifyAll, props } from 'bluebird';
-import osName from 'os-name';
-import { pick, first } from 'lodash';
-import _fs from 'fs';
-import os from 'os';
-import macosRelease from 'macos-release';
+import { simpleGit } from 'simple-git';
+import { stat, readFile } from 'node:fs/promises';
+import os from 'node:os';
+import { createRequire } from 'node:module';
 
-export const git = promisifyAll(gitFact());
+export const git = simpleGit();
 
-const fs = promisifyAll(_fs);
+/**
+ * Get OS name and release info
+ */
+export const getOS = () => {
+  const platform = os.platform();
+  const release = os.release();
+  const arch = os.arch();
+  return `${platform} ${release} (${arch})`;
+};
 
-export const getOS = (osNameArgs = [], release = os.release()) => {
-  const name = osName(...osNameArgs);
-  const shortName = first(name.split(' '));
-  if (['macOS', 'OS X'].indexOf(shortName) >= 0) {
-    release = `${macosRelease(release).version}, Darwin: ${release}`;
+/**
+ * Get git branch, commit, and tag info
+ */
+export const getGitAsync = async () => {
+  const { current: branch } = await git.branch();
+  const log = await git.log({ maxCount: 1 });
+  const commit = log.latest?.hash ?? '';
+  const tags = await git.tags({ '--contains': commit });
+  return { branch, commit, tag: tags };
+};
+
+/**
+ * Read and pick fields from a package.json file
+ * @param {string} filePath - Path to package.json
+ * @param {string[]} picks - Fields to include (default: name, version)
+ */
+export const getPackage = (filePath, picks = ['name', 'version']) => {
+  const require = createRequire(import.meta.url);
+  const pkg = require(filePath);
+  const result = {};
+  for (const key of picks) {
+    if (key in pkg) {
+      result[key] = pkg[key];
+    }
   }
-  return `${name} ${release}`;
-};
-
-export const getGitAsync = () =>
-  // get all git, and build info and output it to a static json file
-  props({
-    branch: git.branchAsync().then(({ current }) => current),
-    commit: git.showAsync().then((ret) =>
-      ret
-        .split(' ')[1]
-        .replace('commit ', '')
-        .replace(/\n.*/g, '')
-    ),
-  }).then((all) => {
-    const { commit } = all;
-    return props({ ...all, tag: git.tagsAsync({ '--contains': commit }) });
-  });
-
-/**
- * @param  {String} filePath
- * @param  {Array<String>} picks - array of fields allowed to be returned,
- * important for security to return a minimum amount of fields. Keep in
- * mind that if you are exposing dependencies it is a security risk and
- * thus that endpoint should only available to admins.
- */
-export const getPackage = (filePath, picks = ['name', 'version']) =>
-  pick(require(filePath), picks);
-
-/**
- * @param  {String} filePath
- */
-export const getBuildTimeAsync = (filePath) => {
-  return fs.statAsync(filePath).then(({ birthtime }) => birthtime);
+  return result;
 };
 
 /**
- * @param  {Object} options
- * @param  {Array} options.pack - getBuildTimeAsync args
- * @param  {Array} options.build - getBuildTimeAsync args
- * @param  {Array} options.os - getOs args
+ * Get the birthtime of a file
+ * @param {string} filePath
  */
-const buildInfoAsync = ({ pack = [], build = [], os = [] }) =>
-  props({
-    pack: getPackage(...pack),
-    git: getGitAsync(),
-    build: getBuildTimeAsync(...build),
-    os: getOS(...os),
-  });
+export const getBuildTimeAsync = async (filePath) => {
+  const stats = await stat(filePath);
+  return stats.birthtime;
+};
+
+/**
+ * Get all build info
+ * @param {Object} options
+ * @param {Array} options.pack - [filePath, picks] for getPackage
+ * @param {Array} options.build - [filePath] for getBuildTimeAsync
+ */
+const buildInfoAsync = async ({ pack = [], build = [] }) => {
+  const [packResult, gitResult, buildResult] = await Promise.all([
+    Promise.resolve(getPackage(...pack)),
+    getGitAsync(),
+    getBuildTimeAsync(...build),
+  ]);
+
+  return {
+    pack: packResult,
+    git: gitResult,
+    build: buildResult,
+    os: getOS(),
+  };
+};
 
 export default buildInfoAsync;
