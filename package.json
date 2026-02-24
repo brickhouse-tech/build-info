@@ -35,6 +35,12 @@
     "simple-git": "^3.27.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.4.2",
+    "@commitlint/config-conventional": "^20.4.2",
+    "commit-and-tag-version": "^12.6.1",
     "vitest": "^3.0.0"
+  },
+  "overrides": {
+    "minimatch": ">=10.2.1"
   }
 }
