@@ -1,11 +1,14 @@
-import path from 'path';
-import _ from 'lodash';
-import buildInfoAsync, { getGitAsync, git, getPackage, getBuildTimeAsync } from '.';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, it, expect } from 'vitest';
+import buildInfoAsync, { getGitAsync, git, getPackage, getBuildTimeAsync } from './index.js';
 
-describe(buildInfoAsync.name, () => {
-  it('not error', async () => {
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+describe('buildInfoAsync', () => {
+  it('should return all build info', async () => {
     const { build, os, git, pack } = await buildInfoAsync({
-      pack: [path.join(__dirname, 'index.js')],
+      pack: [path.join(__dirname, '..', 'package.json')],
       build: [path.join(__dirname, '..', 'package.json')],
     });
     expect(build).toBeDefined();
@@ -14,37 +17,37 @@ describe(buildInfoAsync.name, () => {
     expect(pack).toBeDefined();
   });
 
-  it('fails',  () =>
-    expect(buildInfoAsync({})).rejects.toThrow()
-  );
+  it('should fail with empty options', async () => {
+    await expect(buildInfoAsync({})).rejects.toThrow();
+  });
+});
 
-  describe(getGitAsync, () => {
-    it('work', async () => {
-      const { branch, commit, tag } = await getGitAsync();
-      const { current } = await git.branchAsync();
-      expect(branch).toEqual(current);
-      expect(commit).toBeTruthy();
-      expect(tag).toBeTruthy();
-    });
+describe('getGitAsync', () => {
+  it('should return branch, commit, and tag', async () => {
+    const { branch, commit, tag } = await getGitAsync();
+    const { current } = await git.branch();
+    expect(branch).toEqual(current);
+    expect(commit).toBeTruthy();
+    expect(tag).toBeTruthy();
+  });
+});
+
+describe('getPackage', () => {
+  it('should return default fields (name, version)', () => {
+    const obj = getPackage(path.join(__dirname, '..', 'package.json'));
+    expect(Object.keys(obj)).toEqual(['name', 'version']);
   });
 
-  describe(getPackage.name, () => {
-    it('default fields', () => {
-      const obj = getPackage(path.join(__dirname, '..', 'package.json'));
-      expect(Object.keys(obj)).toEqual(['name', 'version']);
-    });
-
-    it('override fields', () => {
-      const test = ['scripts'];
-      const obj = getPackage(path.join(__dirname, '..', 'package.json'), test);
-      expect(Object.keys(obj)).toEqual(test);
-    });
+  it('should return override fields', () => {
+    const picks = ['scripts'];
+    const obj = getPackage(path.join(__dirname, '..', 'package.json'), picks);
+    expect(Object.keys(obj)).toEqual(picks);
   });
+});
 
-  describe(getBuildTimeAsync.name, () => {
-    it('returns Date', async () => {
-      const ret = await getBuildTimeAsync(path.join(__dirname, '..', 'package.json'));
-      expect(ret.toUTCString()).toMatch(/.*GMT/);
-    });
+describe('getBuildTimeAsync', () => {
+  it('should return a Date', async () => {
+    const ret = await getBuildTimeAsync(path.join(__dirname, '..', 'package.json'));
+    expect(ret.toUTCString()).toMatch(/.*GMT/);
   });
 });
