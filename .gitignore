@@ -44,8 +44,5 @@ lib
 #node-config
 config/local.js
 config/local.json
-add
-package-lock.json
-
 
 .history
