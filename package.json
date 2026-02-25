@@ -1,6 +1,6 @@
 {
   "name": "@znemz/build-info",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Get build info (git, os, package) for your app",
   "type": "module",
   "main": "src/index.js",
