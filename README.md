@@ -43,7 +43,7 @@ buildInfoAsync({
 /*
 { pack: { name: '@znemz/build-info', version: '0.0.1' },
   git:
-   { branch: 'master',
+   { branch: 'main',
      commit: '7f84cea66d5faf8c14000bd34a130ce730f68bde',
      tag: TagList { latest: undefined, all: [] } },
   build: 2019-06-05T20:54:50.983Z,
@@ -83,7 +83,7 @@ Returns the git current commit, branch, and tag info.
 
 ```js
 getGitAsync().then(console.log);
-// { branch: 'master',
+// { branch: 'main',
 //   commit: '7f84cea66d5faf8c14000bd34a130ce730f68bde',
 //   tag: TagList { latest: undefined, all: [] } }
 ```
@@ -118,4 +118,4 @@ getOS();
 [travis-image]: https://img.shields.io/travis/nmccready/build-info.svg
 [travis-url]: https://travis-ci.org/nmccready/build-info
 [coveralls-image]: https://coveralls.io/repos/github/nmccready/build-info/badge.svg
-[coveralls-url]: https://coveralls.io/github/nmccready/build-info?branch=master
+[coveralls-url]: https://coveralls.io/github/nmccready/build-info?branch=main
