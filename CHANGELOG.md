@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.4](https://github.com/brickhouse-tech/build-info/compare/v1.0.3...v1.0.4) (2026-03-17)
+
 ## [1.0.3](https://github.com/brickhouse-tech/build-info/compare/v1.0.2...v1.0.3) (2026-03-15)
 
 ## [1.0.2](https://github.com/brickhouse-tech/build-info/compare/v1.0.1...v1.0.2) (2026-02-25)
