@@ -1,4 +1,4 @@
-name: tests
+name: ci
 
 on:
   workflow_call:
@@ -22,8 +22,8 @@ jobs:
       - run: npm install
       - run: npm test
 
-  tests:
-    name: tests
+  gate:
+    name: gate
     needs: [test]
     runs-on: ubuntu-latest
     if: always()
