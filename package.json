@@ -32,7 +32,7 @@
   "author": "Nick McCready",
   "license": "MIT",
   "dependencies": {
-    "simple-git": "^3.27.0"
+    "simple-git": "^4.0.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.4.2",
