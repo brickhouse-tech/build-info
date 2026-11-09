@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.0.32](https://github.com/brickhouse-tech/build-info/compare/v1.0.31...v1.0.32) (2026-11-09)
+
+
+### Bug Fixes
+
+* **deps:** bump simple-git to 4.0.2 for patched @simple-git/argv-parser ([6d40c16](https://github.com/brickhouse-tech/build-info/commit/6d40c16817ffc4cd85cf6b74a02ad170abed54b8))
+
 ## [1.0.31](https://github.com/brickhouse-tech/build-info/compare/v1.0.30...v1.0.31) (2026-10-30)
 
 ## [1.0.30](https://github.com/brickhouse-tech/build-info/compare/v1.0.29...v1.0.30) (2026-10-30)
